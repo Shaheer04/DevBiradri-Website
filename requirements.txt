@@ -1,0 +1,11 @@
+BareNecessities==0.2.8
+blinker==1.8.2
+click==8.1.7
+colorama==0.4.6
+Flask==3.0.3
+Flask-Mail==0.10.0
+itsdangerous==2.2.0
+Jinja2==3.1.4
+Mail==2.1.0
+MarkupSafe==3.0.1
+Werkzeug==3.0.4
