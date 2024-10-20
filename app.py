@@ -14,7 +14,6 @@ password = os.getenv('SMTP_PASSWORD')
 smtp_server = os.getenv('SMTP_SERVER')
 smtp_port = os.getenv('SMTP_PORT')
 
-
 app = Flask(__name__)
 
 # Connect to MongoDB
@@ -48,7 +47,6 @@ def send_email(recipient, subject, template, **kwargs):
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def evnet_register():
@@ -109,6 +107,19 @@ def subscribe():
 @app.route('/success')
 def success():
     return jsonify({"status": "sucess", "message": "Sucessfully Registered!, Check your email for confirmation"}), 200
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/dashboard-table')
+def get_table():
+    return render_template("table.html")
+
+
+@app.route('/dashboard-events')
+def add_events():
+    return render_template("add_events.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
