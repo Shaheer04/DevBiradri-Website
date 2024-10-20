@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registration Confirmation</h1>
+        </div>
+        <div class="content">
+            <h2>Dear {{ name }},</h2>
+            <p>Thank you for registering for our event. We have received your registration and are excited to have you join us!</p>
+            <p>Here's what you can expect next:</p>
+            <ul>
+                <li>You will receive a follow-up email with more details about the event schedule.</li>
+                <li>If you have any questions, please don't hesitate to reach out to our support team.</li>
+                <li>We recommend adding the event to your calendar to ensure you don't miss it.</li>
+            </ul>
+            <p>We look forward to seeing you at the event!</p>
+            <p>Best regards,<br>Team DevBiradri</p>
+        </div>
+        <div class="footer">
+            <p>This email was sent to you because you registered for our event. If you didn't register, please ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>
