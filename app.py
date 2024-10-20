@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,redirect, url_for
+from flask import Flask, render_template, request,redirect, url_for, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv,find_dotenv
@@ -21,16 +21,17 @@ app = Flask(__name__)
 client = MongoClient(mongo_url)
 db = client['Cluster0']
 collection = db['registration_form_submissions']
+newsletter_collection = db['newsletter_subscribers']
 
-def send_confirmation_email(recipient, name):
+def send_email(recipient, subject, template, **kwargs):
     sender_email = username
     message = MIMEMultipart("alternative")
-    message["Subject"] = "Registration Confirmation"
+    message["Subject"] = subject
     message["From"] = sender_email
     message["To"] = recipient
 
     # Create the HTML version of your message
-    html = render_template('email_template.html', name=name)
+    html = render_template(template, **kwargs)
     
     # Turn these into plain/html MIMEText objects
     part = MIMEText(html, "html")
@@ -68,13 +69,13 @@ def evnet_register():
             
             #Check if email is already registered
             if collection.find_one({'email': form_data['email']}):
-                return "Email already registered!"
+                return jsonify({"status": "error", "message": "Email already registered"}), 400
             
             # Save data to MongoDB
             result = collection.insert_one(form_data)
 
             try:
-                send_confirmation_email(form_data['email'], form_data['fullname'])
+                send_email(form_data['email'], "Registration Confirmation", 'email_template.html', name=form_data['fullname'])
             except Exception as e:
                 print(f"Failed to send email: {e}")
             
@@ -83,9 +84,31 @@ def evnet_register():
     
     return render_template('register.html')
 
+@app.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = request.form.get('newsletter-mail')
+    
+    if not email:
+        return jsonify({"status": "error", "message": "Email is required"}), 400
+    
+    # Check if email already exists
+    if newsletter_collection.find_one({"email": email}):
+        return jsonify({"status": "error", "message": "Email already subscribed"}), 400
+    
+    # Save email to MongoDB
+    newsletter_collection.insert_one({"email": email})
+    
+    # Send confirmation email
+    try:
+        send_email(email, "Newsletter Subscription Confirmation", 'newsletter.html')
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+    
+    return jsonify({"status": "success", "message": "Subscribed successfully"}), 200
+
 @app.route('/success')
 def success():
-    return "Form submitted successfully! Please check your email for confirmation."
+    return jsonify({"status": "sucess", "message": "Sucessfully Registered!, Check your email for confirmation"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

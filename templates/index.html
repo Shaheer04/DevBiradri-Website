@@ -400,17 +400,19 @@
           Your company may not be in the software business,
           but eventually, a software company will be in your business.
         </p>
-        <div class="row">
-          <div class="col-8">
-            <div class="input-group input-group-outline">
-              <label class="form-label">Email Here...</label>
-              <input type="text" class="form-control mb-sm-0">
-            </div>
+        <form id="newsletter-form">
+          <div class="row">
+              <div class="col-8">
+                  <div class="input-group input-group-outline">
+                      <label class="form-label">Email Here...</label>
+                      <input type="email" class="form-control mb-sm-0" name="newsletter-mail" required>
+                  </div>
+              </div>
+              <div class="col-4 ps-0">
+                  <button type="submit" class="btn bg-gradient-info mb-0 h-100 position-relative z-index-2">Subscribe</button>
+              </div>
           </div>
-          <div class="col-4 ps-0">
-            <button type="button" class="btn bg-gradient-info mb-0 h-100 position-relative z-index-2">Subscribe</button>
-          </div>
-        </div>
+      </form>
       </div>
       <div class="col-md-5 ms-auto">
         <div class="position-relative">
@@ -637,9 +639,26 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
 <script src="./static/assets/js/material-kit.min.js?v=3.0.4" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
 <script type="text/javascript">
+  $(document).ready(function() {
+    $('#newsletter-form').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/subscribe',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                alert(response.message);
+            },
+            error: function(xhr) {
+                alert(xhr.responseJSON.message);
+            }
+        });
+    });
+  });
 
   if (document.getElementById('state1')) {
     const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
