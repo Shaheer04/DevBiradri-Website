@@ -79,9 +79,9 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tables</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Events</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Tables</h6>
+          <h6 class="font-weight-bolder mb-0">Events</h6>
         </nav>
       </div>
     </nav>
@@ -89,7 +89,58 @@
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
-          
+          <form id="event-form" method="post" action="{{ url_for('add_events') }}" autocomplete="off">
+            <div class="card-body p-0 my-3">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-name">Event Name</label>
+                    <input type="text" class="form-control" id="event-name" name="event_name" required placeholder="Enter event name">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-date">Event Date</label>
+                    <input type="date" class="form-control" id="event-date" name="event_date" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-type">Event Type</label>
+                    <select class="form-control" id="event-type" name="event_type" required>
+                      <option value="">Select Event Type</option>
+                      <option value="virtual">Virtual</option>
+                      <option value="physical">Physical</option>
+                      <option value="hybrid">Hybrid</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-link">Event Link</label>
+                    <input type="url" class="form-control" id="event-link" name="event_link" placeholder="https://example.com/event">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-description">Event Description</label>
+                    <textarea class="form-control" id="event-description" name="event_description" rows="6" required placeholder="Describe your event"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <button type="submit" class="btn bg-gradient-primary mt-3 mb-0">Publish Event</button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+
         </div>
     </div>
       <footer class="footer py-4  ">
@@ -116,6 +167,7 @@
   <script src="../static/assets/js/core/bootstrap.min.js"></script>
   <script src="../static/assets/js/plugins/perfect-scrollbar.min.js"></script>
   <script src="../static/assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="../static/assets/js/plugins/flatpickr.min.js"></script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {

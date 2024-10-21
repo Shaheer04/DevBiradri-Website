@@ -176,6 +176,10 @@ def admin_logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('admin_login'))
 
+@app.route('/events')
+def get_events():
+    return render_template('events.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
