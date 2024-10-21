@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request,redirect, url_for, jsonify, flash, session
+from flask_paginate import Pagination, get_page_parameter
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from functools import wraps
@@ -7,6 +8,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from datetime import datetime
 
 load_dotenv(find_dotenv())
 mongo_url = os.getenv('MONGO_URL')
@@ -89,7 +91,7 @@ def evnet_register():
             result = collection.insert_one(form_data)
 
             try:
-                send_email(form_data['email'], "Registration Confirmation", 'email_template.html', name=form_data['fullname'])
+                send_email(form_data['email'], "Registration Confirmation", 'email_templates/event_registered.html', name=form_data['fullname'])
             except Exception as e:
                 print(f"Failed to send email: {e}")
             
@@ -114,7 +116,7 @@ def subscribe():
     
     # Send confirmation email
     try:
-        send_email(email, "Newsletter Subscription Confirmation", 'newsletter.html')
+        send_email(email, "Newsletter Subscription Confirmation", 'email_templates/newsletter.html')
     except Exception as e:
         print(f"Failed to send email: {e}")
     
@@ -127,12 +129,12 @@ def success():
 @app.route('/dashboard-table')
 @login_required
 def get_table():
-    return render_template("table.html")
+    return render_template("/dashboard/table.html")
 
 @app.route('/dashboard-events')
 @login_required
 def add_events():
-    return render_template("add_events.html")
+    return render_template("/dashboard/add_events.html")
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -167,7 +169,7 @@ def admin_dashboard():
     # Fetch data for the dashboard
     #form_submissions = collection.find().limit(10)  # Last 10 form submissions
     #newsletter_subscribers = newsletter_collection.find().limit(10)  # Last 10 newsletter subscribers
-    return render_template('dashboard.html')
+    return render_template('/dashboard/dashboard.html')
 
 @app.route('/admin/logout')
 @login_required
@@ -176,9 +178,53 @@ def admin_logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('admin_login'))
 
+@app.route('/publish-event', methods=['GET', 'POST'])
+@login_required  # If you have authentication in place
+def publish_event():
+    if request.method == 'POST':
+        event_data = {
+            'name': request.form['event_name'],
+            'description': request.form['event_description'],
+            'event_type': request.form['event_type'],
+            'date': datetime.strptime(request.form['event_date'], '%Y-%m-%d'),
+            'link': request.form['event_link'],
+            'created_at': datetime.utcnow()
+        }
+
+        try:
+            # Insert the event into MongoDB
+            result = db.events.insert_one(event_data)
+            
+            if result.inserted_id:
+                flash('Event published successfully!', 'success')
+                return redirect(url_for('events_page'))
+            else:
+                flash('Failed to publish event. Please try again.', 'error')
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}', 'error')
+        
+        return redirect(url_for('publish_event'))
+
+    return render_template('/dashboard/add_events.html')
+
 @app.route('/events')
-def get_events():
-    return render_template('events.html')
+def events_page():
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    per_page = 8  # Number of events per page
+
+    # Calculate the number of documents to skip
+    skip = (page - 1) * per_page
+
+    # Fetch total number of events
+    total = db.events.count_documents({})
+
+    # Fetch events for the current page
+    events = list(db.events.find().sort('date', -1).skip(skip).limit(per_page))
+
+    # Create pagination object
+    pagination = Pagination(page=page, total=total, per_page=per_page, css_framework='bootstrap4')
+
+    return render_template('events.html', events=events, pagination=pagination)
 
 
 if __name__ == '__main__':
