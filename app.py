@@ -68,7 +68,21 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    current_date = datetime.now()
+    
+    # Get upcoming events
+    upcoming_events = list(db.events.find({
+        'date': {'$gte': current_date}
+    }).sort('date', 1).limit(3))
+    
+    # Get past events
+    past_events = list(db.events.find({
+        'date': {'$lt': current_date}
+    }).sort('date', -1).limit(3))
+    
+    return render_template('index.html',
+                         upcoming_events=upcoming_events,
+                         past_events=past_events)
 
 @app.route('/register', methods=['GET', 'POST'])
 def event_register():

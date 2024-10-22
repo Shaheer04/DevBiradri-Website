@@ -128,213 +128,96 @@
   </section>
 
   <div class="container-fluid px-4 mt-4 mb-4">
+    <!-- Upcoming Events -->
     <div class="row g-4 justify-content-center">
-      <div class="text-start me-lg-auto mb-5">
-        <h2 class="display-4 m-4">Upcoming Events</h2>
-      </div>
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card" data-animation="true" style="max-width: 100%;">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <a class="d-block blur-shadow-image">
-              <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-            </a>
-            <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
-          </div>
-          <div class="card-body text-center">
-            <div class="d-flex mt-n6 mx-auto">
-              <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-                <i class="material-icons text-lg">link</i>
-              </a>
-              <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-                <i class="material-icons text-lg">info</i>
-              </button>
-            </div>
-            <h5 class="font-weight-normal mt-3">
-              <a href="javascript:;">.Net Career Kick Start</a>
-            </h5>
-            <p class="mb-0">
-              A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-            </p>
-          </div>
-          <hr class="dark horizontal my-0">
-          <div class="card-footer d-flex">
-            <p class="font-weight-normal my-auto">April-21-2024</p>
-            <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-            <p class="text-sm my-auto">Virtual</p>
-          </div>
+        <div class="text-start me-lg-auto mb-5">
+            <h2 class="display-4 m-4">Upcoming Events</h2>
         </div>
-      </div>
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card" data-animation="true" style="max-width: 100%;">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <a class="d-block blur-shadow-image">
-              <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-            </a>
-            <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
-          </div>
-          <div class="card-body text-center">
-            <div class="d-flex mt-n6 mx-auto">
-              <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-                <i class="material-icons text-lg">link</i>
-              </a>
-              <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-                <i class="material-icons text-lg">info</i>
-              </button>
+        {% for event in upcoming_events %}
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card" data-animation="true">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <a class="d-block blur-shadow-image">
+                      <img src="{{ url_for('static', filename=event.poster_image) }}" alt="{{ event.name }}" class="img-fluid shadow border-radius-lg" loading="lazy">
+                    </a>
+                </div>
+                <div class="card-body text-center">
+                    <div class="d-flex mt-n6 mx-auto">
+                        <a href="{{ event.link }}" class="btn btn-link text-primary ms-auto border-0" 
+                           data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
+                            <i class="material-icons text-lg">link</i>
+                        </a>
+                        <button class="btn btn-link text-info me-auto border-0" 
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
+                            <i class="material-icons text-lg">info</i>
+                        </button>
+                    </div>
+                    <h5 class="font-weight-normal mt-3">
+                        <a href="{{ event.link }}">{{ event.title }}</a>
+                    </h5>
+                    <p class="mb-0">
+                        {{ event.description }}
+                    </p>
+                </div>
+                <hr class="dark horizontal my-0">
+                <div class="card-footer d-flex">
+                    <p class="font-weight-normal my-auto">{{ event.date.strftime('%B-%d-%Y') }}</p>
+                    <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
+                    <p class="text-sm my-auto">{{ event.location }}</p>
+                </div>
             </div>
-            <h5 class="font-weight-normal mt-3">
-              <a href="javascript:;">.Net Career Kick Start</a>
-            </h5>
-            <p class="mb-0">
-              A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-            </p>
-          </div>
-          <hr class="dark horizontal my-0">
-          <div class="card-footer d-flex">
-            <p class="font-weight-normal my-auto">April-21-2024</p>
-            <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-            <p class="text-sm my-auto">Virtual</p>
-          </div>
         </div>
+        {% endfor %}
+        <a href="{{ url_for('events_page') }}" class="text-end text-info icon-move-right">See More
+            <i class="fas fa-arrow-right text-sm ms-1"></i>
+        </a>
     </div>
-    <div class="col-lg-4 col-md-6 col-sm-12">
-      <div class="card" data-animation="true" style="max-width: 100%;">
-        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-          <a class="d-block blur-shadow-image">
-            <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-          </a>
-          <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
+
+    <!-- Past Events -->
+    <div class="row g-4 justify-content-center mt-5">
+        <div class="text-start me-lg-auto mb-5">
+            <h2 class="display-4 m-4">Past Events</h2>
         </div>
-        <div class="card-body text-center">
-          <div class="d-flex mt-n6 mx-auto">
-            <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-              <i class="material-icons text-lg">link</i>
-            </a>
-            <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-              <i class="material-icons text-lg">info</i>
-            </button>
-          </div>
-          <h5 class="font-weight-normal mt-3">
-            <a href="javascript:;">.Net Career Kick Start</a>
-          </h5>
-          <p class="mb-0">
-            A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-          </p>
-        </div>
-        <hr class="dark horizontal my-0">
-        <div class="card-footer d-flex">
-          <p class="font-weight-normal my-auto">April-21-2024</p>
-          <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-          <p class="text-sm my-auto">Virtual</p>
-        </div>
-      </div>
-  </div>
-  <br><a href="/events" class="text-end text-info icon-move-right">See More
-    <i class="fas fa-arrow-right text-sm ms-1"></i>
-  </a>
-      <div class="text-start me-lg-auto mb-5">
-        <h2 class="display-4 m-4">Previous Events</h2>
-      </div>
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card" data-animation="true" style="max-width: 100%;">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <a class="d-block blur-shadow-image">
-              <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-            </a>
-            <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
-          </div>
-          <div class="card-body text-center">
-            <div class="d-flex mt-n6 mx-auto">
-              <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-                <i class="material-icons text-lg">link</i>
-              </a>
-              <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-                <i class="material-icons text-lg">info</i>
-              </button>
+        {% for event in past_events %}
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card" data-animation="true">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <a class="d-block blur-shadow-image">
+                      <img src="{{ url_for('static', filename=event.poster_image) }}" alt="{{ event.name }}" class="img-fluid shadow border-radius-lg" loading="lazy">
+                    </a>
+                </div>
+                <div class="card-body text-center">
+                    <div class="d-flex mt-n6 mx-auto">
+                        <a href="{{ event.link }}" class="btn btn-link text-primary ms-auto border-0" 
+                           data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
+                            <i class="material-icons text-lg">link</i>
+                        </a>
+                        <button class="btn btn-link text-info me-auto border-0" 
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
+                            <i class="material-icons text-lg">info</i>
+                        </button>
+                    </div>
+                    <h5 class="font-weight-normal mt-3">
+                        <a href="{{ event.link }}">{{ event.title }}</a>
+                    </h5>
+                    <p class="mb-0">
+                        {{ event.description }}
+                    </p>
+                </div>
+                <hr class="dark horizontal my-0">
+                <div class="card-footer d-flex">
+                    <p class="font-weight-normal my-auto">{{ event.date.strftime('%B-%d-%Y') }}</p>
+                    <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
+                    <p class="text-sm my-auto">{{ event.location }}</p>
+                </div>
             </div>
-            <h5 class="font-weight-normal mt-3">
-              <a href="javascript:;">.Net Career Kick Start</a>
-            </h5>
-            <p class="mb-0">
-              A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-            </p>
-          </div>
-          <hr class="dark horizontal my-0">
-          <div class="card-footer d-flex">
-            <p class="font-weight-normal my-auto">April-21-2024</p>
-            <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-            <p class="text-sm my-auto">Virtual</p>
-          </div>
         </div>
-      </div>
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card" data-animation="true" style="max-width: 100%;">
-          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-            <a class="d-block blur-shadow-image">
-              <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-            </a>
-            <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
-          </div>
-          <div class="card-body text-center">
-            <div class="d-flex mt-n6 mx-auto">
-              <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-                <i class="material-icons text-lg">link</i>
-              </a>
-              <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-                <i class="material-icons text-lg">info</i>
-              </button>
-            </div>
-            <h5 class="font-weight-normal mt-3">
-              <a href="javascript:;">.Net Career Kick Start</a>
-            </h5>
-            <p class="mb-0">
-              A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-            </p>
-          </div>
-          <hr class="dark horizontal my-0">
-          <div class="card-footer d-flex">
-            <p class="font-weight-normal my-auto">April-21-2024</p>
-            <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-            <p class="text-sm my-auto">Virtual</p>
-          </div>
-        </div>
+        {% endfor %}
+        <a href="{{ url_for('events_page') }}" class="text-end text-info icon-move-right">See More
+            <i class="fas fa-arrow-right text-sm ms-1"></i>
+        </a>
     </div>
-    <div class="col-lg-4 col-md-6 col-sm-12">
-      <div class="card" data-animation="true" style="max-width: 100%;">
-        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-          <a class="d-block blur-shadow-image">
-            <img src="https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg" alt="img-blur-shadow" class="img-fluid shadow border-radius-lg">
-          </a>
-          <div class="colored-shadow" style="background-image: url(&quot;https://demos.creative-tim.com/test/material-dashboard-pro/assets/img/products/product-1-min.jpg&quot;);"></div>
-        </div>
-        <div class="card-body text-center">
-          <div class="d-flex mt-n6 mx-auto">
-            <a class="btn btn-link text-primary ms-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="link">
-              <i class="material-icons text-lg">link</i>
-            </a>
-            <button class="btn btn-link text-info me-auto border-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="info">
-              <i class="material-icons text-lg">info</i>
-            </button>
-          </div>
-          <h5 class="font-weight-normal mt-3">
-            <a href="javascript:;">.Net Career Kick Start</a>
-          </h5>
-          <p class="mb-0">
-            A 1-hour Live Event Broadcast from MLSA online, emphasizing career opportunities within the .NET framework as well as providing first-hand insights from experts and a hands-on workshop for Intro to .NET.
-          </p>
-        </div>
-        <hr class="dark horizontal my-0">
-        <div class="card-footer d-flex">
-          <p class="font-weight-normal my-auto">April-21-2024</p>
-          <i class="material-icons position-relative ms-auto text-lg me-1 my-auto">place</i>
-          <p class="text-sm my-auto">Virtual</p>
-        </div>
-      </div>
-  </div>
-  <br><a href="/events" class="text-end text-info icon-move-right">See More
-    <i class="fas fa-arrow-right text-sm ms-1"></i>
-  </a>
-  </div>
-  </div>
+</div>
 
 <section class="my-5 py-5">
   <div class="container">
