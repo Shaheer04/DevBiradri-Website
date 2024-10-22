@@ -9,6 +9,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static/uploads/events'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 load_dotenv(find_dotenv())
 mongo_url = os.getenv('MONGO_URL')
@@ -67,7 +71,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
-def evnet_register():
+def event_register():
     if request.method == 'POST':
             # Extract form data
             form_data = {
@@ -141,7 +145,7 @@ def admin_login():
     print("Admin login route accessed")  # Debug print
     if 'admin_logged_in' in session:
         print("Admin already logged in, redirecting to dashboard")  # Debug print
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
         print("POST request received")  # Debug print
@@ -165,11 +169,35 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 @login_required
-def admin_dashboard():
-    # Fetch data for the dashboard
-    #form_submissions = collection.find().limit(10)  # Last 10 form submissions
-    #newsletter_subscribers = newsletter_collection.find().limit(10)  # Last 10 newsletter subscribers
-    return render_template('/dashboard/dashboard.html')
+def dashboard():
+    # Fetch statistics for dashboard
+    stats = {
+        "total_events": db.events.count_documents({}),
+        "newsletter_subscribers": db.subscribers.count_documents({}),
+        "upcoming_events": db.events.count_documents({"date": {"$gte": datetime.now()}})
+    }
+    
+    # Fetch latest events
+    latest_events = db.events.find().sort("date", -1).limit(5)
+    
+    # Fetch recent registrations
+    recent_registrations = db.registrations.aggregate([
+        {
+            "$lookup": {
+                "from": "events",
+                "localField": "event_id",
+                "foreignField": "_id",
+                "as": "event"
+            }
+        },
+        {"$sort": {"registration_date": -1}},
+        {"$limit": 6}
+    ])
+    
+    return render_template("dashboard/dashboard.html", 
+                         stats=stats, 
+                         latest_events=latest_events,
+                         recent_registrations=recent_registrations)
 
 @app.route('/admin/logout')
 @login_required
@@ -181,31 +209,43 @@ def admin_logout():
 @app.route('/publish-event', methods=['GET', 'POST'])
 @login_required  # If you have authentication in place
 def publish_event():
-    if request.method == 'POST':
-        event_data = {
-            'name': request.form['event_name'],
-            'description': request.form['event_description'],
-            'event_type': request.form['event_type'],
-            'date': datetime.strptime(request.form['event_date'], '%Y-%m-%d'),
-            'link': request.form['event_link'],
-            'created_at': datetime.utcnow()
-        }
 
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    if 'event_poster' in request.files:
+        file = request.files['event_poster']
+        if file and file.filename != '':
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(file_path)
+            poster_path = f'uploads/events/{filename}'
+        else:
+            poster_path = 'sassets/img/event-placeholder.jpg'
+
+        fee = request.form.get('event_fee', '')
         try:
-            # Insert the event into MongoDB
-            result = db.events.insert_one(event_data)
-            
-            if result.inserted_id:
-                flash('Event published successfully!', 'success')
-                return redirect(url_for('events_page'))
-            else:
-                flash('Failed to publish event. Please try again.', 'error')
-        except Exception as e:
-            flash(f'An error occurred: {str(e)}', 'error')
-        
-        return redirect(url_for('publish_event'))
+            fee = float(fee) if fee.strip() else 0.0
+        except ValueError:
+            fee = 0.0
 
-    return render_template('/dashboard/add_events.html')
+    event_data = {
+        'name': request.form.get('event_name'),
+        'date': datetime.strptime(request.form.get('event_date'), '%Y-%m-%d'),
+        'time': request.form.get('event_time'),
+        'event_type': request.form.get('event_type'),
+        'capacity': request.form.get('event_capacity'),
+        'location': request.form.get('event_location'),
+        'registration_deadline': request.form.get('registration_deadline'),
+        'registration_link': request.form.get('registration_link'),
+        'fee':fee,
+        'description': request.form.get('event_description'),
+        'additional_info': request.form.get('additional_info'),
+        'poster_image': poster_path,
+        'created_at': datetime.utcnow()
+    }
+
+    db.events.insert_one(event_data)
+    flash('Event published successfully!', 'success')
+    return redirect(url_for('events_page'))
 
 @app.route('/events')
 def events_page():
@@ -225,6 +265,14 @@ def events_page():
     pagination = Pagination(page=page, total=total, per_page=per_page, css_framework='bootstrap4')
 
     return render_template('events.html', events=events, pagination=pagination)
+
+@app.route('/event/<event_id>')
+def event_detail(event_id):
+    # Fetch the specific event from database using event_id
+    event = db.events.find_one({'_id': ObjectId(event_id)})
+    if not event:
+        abort(404)
+    return render_template('event_detail.html', event=event)
 
 
 if __name__ == '__main__':

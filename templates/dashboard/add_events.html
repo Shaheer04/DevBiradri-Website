@@ -89,8 +89,9 @@
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
-          <form id="event-form" method="post" action="{{ url_for('publish_event') }}" autocomplete="off">
+          <form id="event-form" method="post" action="{{ url_for('publish_event') }}" enctype="multipart/form-data" autocomplete="off">
             <div class="card-body p-0 my-3">
+              <!-- Basic Event Information -->
               <div class="row">
                 <div class="col-md-6">
                   <div class="input-group input-group-static mb-4">
@@ -105,8 +106,16 @@
                   </div>
                 </div>
               </div>
+    
+              <!-- Event Time and Type -->
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-time">Event Time</label>
+                    <input type="time" class="form-control" id="event-time" name="event_time" required>
+                  </div>
+                </div>
+                <div class="col-md-4">
                   <div class="input-group input-group-static mb-4">
                     <label for="event-type">Event Type</label>
                     <select class="form-control" id="event-type" name="event_type" required>
@@ -117,13 +126,58 @@
                     </select>
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <div class="input-group input-group-static mb-4">
-                    <label for="event-link">Event Link</label>
-                    <input type="url" class="form-control" id="event-link" name="event_link" placeholder="https://example.com/event">
+                    <label for="event-capacity">Event Capacity</label>
+                    <input type="number" class="form-control" id="event-capacity" name="event_capacity" placeholder="Maximum attendees">
                   </div>
                 </div>
               </div>
+    
+              <!-- Location and Registration -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-location">Event Location</label>
+                    <input type="text" class="form-control" id="event-location" name="event_location" placeholder="Enter location or meeting link">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="registration-deadline">Registration Deadline</label>
+                    <input type="date" class="form-control" id="registration-deadline" name="registration_deadline">
+                  </div>
+                </div>
+              </div>
+    
+              <!-- Registration Details -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="registration-link">Registration Link</label>
+                    <input type="url" class="form-control" id="registration-link" name="registration_link" placeholder="https://example.com/register">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-fee">Registration Fee ($)</label>
+                    <input type="number" step="0.01" class="form-control" id="event-fee" name="event_fee" placeholder="0.00">
+                  </div>
+                </div>
+              </div>
+    
+              <!-- Event Poster -->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="event-poster" class="ms-0">Event Poster</label>
+                    <input type="file" class="form-control" id="event-poster" name="event_poster" accept="image/*">
+                    <small class="form-text text-muted">Recommended size: 1200x630 pixels. Maximum file size: 5MB</small>
+                  </div>
+                </div>
+              </div>
+    
+              <!-- Event Description -->
               <div class="row">
                 <div class="col-md-12">
                   <div class="input-group input-group-static mb-4">
@@ -132,6 +186,18 @@
                   </div>
                 </div>
               </div>
+    
+              <!-- Additional Information -->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="input-group input-group-static mb-4">
+                    <label for="additional-info">Additional Information</label>
+                    <textarea class="form-control" id="additional-info" name="additional_info" rows="4" placeholder="Any additional details, special instructions, or requirements"></textarea>
+                  </div>
+                </div>
+              </div>
+    
+              <!-- Submit Button -->
               <div class="row">
                 <div class="col-md-12 text-center">
                   <button type="submit" class="btn bg-gradient-primary mt-3 mb-0">Publish Event</button>
@@ -139,6 +205,9 @@
               </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
 
 
         </div>
