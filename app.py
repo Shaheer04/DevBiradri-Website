@@ -214,21 +214,19 @@ def dashboard():
     latest_events = db.events.find().sort("date", -1).limit(5)
     
     # Fetch recent registrations
-    recent_registrations = db.registrations.aggregate([
-        {
-            "$lookup": {
-                "from": "events",
-                "localField": "event_id",
-                "foreignField": "_id",
-                "as": "event"
-            }
-        },
-        {"$sort": {"registration_date": -1}},
-        {"$limit": 6}
-    ])
-    
+    pipeline = [
+        {"$limit": 1},  # Limit to the first document (latest)
+        {"$project": {  # Project only the desired fields
+            "name": 1,
+            "email": 1,
+            "profession": 1
+        }}
+    ]
+    latest_object = collection.aggregate(pipeline)
+    recent_registrations = next(latest_object)  # Get the first document from the iterator
+
     return render_template("dashboard/dashboard.html", 
-                         stats=stats, 
+                         stats=stats,
                          latest_events=latest_events,
                          recent_registrations=recent_registrations)
 
@@ -303,7 +301,7 @@ def events_page():
 def event_detail(event_id):
     # Fetch the specific event from database using event_id
     event = db.events.find_one({'_id': ObjectId(event_id)})
-    
+
     if not event:
         abort(404)
     return render_template('event_detail.html', event=event)
