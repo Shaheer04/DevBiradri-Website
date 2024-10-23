@@ -147,7 +147,18 @@ def success():
 @app.route('/dashboard-table')
 @login_required
 def get_table():
-    return render_template("/dashboard/table.html")
+    projection = {
+        '_id': 0,  # Exclude the _id field
+        'fullname': 1,
+        'email': 1,
+        'phone': 1,
+        'profession': 1,
+        'institute_name': 1
+    }
+    
+    # Retrieve only specified fields from MongoDB
+    registrations = db.registration_form_submissions.find({}, projection)
+    return render_template("/dashboard/table.html", registrations=registrations)
 
 @app.route('/dashboard-events')
 @login_required
@@ -174,7 +185,7 @@ def admin_login():
             print("Credentials correct, setting session")  # Debug print
             session['admin_logged_in'] = True
             flash('Logged in successfully.', 'success')
-            return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('dashboard'))
         else:
             print("Invalid credentials")  # Debug print
             flash('Invalid email or password', 'error')
