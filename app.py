@@ -87,6 +87,7 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def event_register():
     if request.method == 'POST':
+        try:
             # Extract form data
             form_data = {
                 'fullname': request.form.get('fullname'),
@@ -101,20 +102,27 @@ def event_register():
                 'joined_whatsapp': request.form.get('ws-group')
             }
             
-            #Check if email is already registered
+            # Check if email is already registered
             if collection.find_one({'email': form_data['email']}):
-                return jsonify({"status": "error", "message": "Email already registered"}), 400
+                flash('error:Email already registered', 'error')
+                return redirect(url_for('events_page'))
             
             # Save data to MongoDB
             result = collection.insert_one(form_data)
 
             try:
-                send_email(form_data['email'], "Registration Confirmation", 'email_templates/event_registered.html', name=form_data['fullname'])
+                send_email(form_data['email'], "Sucessfully Registered!", 'email_templates/event_registered.html', name=form_data['fullname'])
             except Exception as e:
                 print(f"Failed to send email: {e}")
+                # Continue with registration even if email fails
             
-            # Redirect to a success page or back to the form
-            return redirect(url_for('success'))
+            flash('success:Registration successful! Welcome aboard!', 'success')
+            return redirect(url_for('event_register'))
+
+        except Exception as e:
+            print(f"Registration error: {e}")
+            flash('error:Registration failed. Please try again.', 'error')
+            return redirect(url_for('event_register'))
     
     return render_template('register.html')
 
@@ -295,6 +303,7 @@ def events_page():
 def event_detail(event_id):
     # Fetch the specific event from database using event_id
     event = db.events.find_one({'_id': ObjectId(event_id)})
+    
     if not event:
         abort(404)
     return render_template('event_detail.html', event=event)

@@ -24,9 +24,11 @@
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
 <body class="contact-us">
+        <div id="alert-container"></div>
    <!-- Navbar -->
    <div class="container position-sticky z-index-sticky top-0"><div class="row"><div class="col-12">
     <nav class="navbar navbar-expand-lg  blur border-radius-xl top-0 z-index-fixed shadow position-absolute my-3 py-2 start-0 end-0 mx-4">
@@ -325,6 +327,78 @@
     const example = new Choices(element, {});
     }
   </script>
+  <script>
+    // Store flash messages in a JavaScript variable
+    const flashMessages = [
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    "{{ message }}",
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    ];
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Process each flash message
+        flashMessages.forEach(function(message) {
+            if (message) {
+                const parts = message.split(':');
+                const type = parts[0] || 'info';
+                const msg = parts[1] || message;
+                showAlert(msg, type);
+            }
+        });
+    });
+    
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alert-container');
+        
+        // Create alert element
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${type === 'success' ? 'bg-gradient-success' : 'bg-gradient-danger'} text-white`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.style.padding = '1rem';
+        alertDiv.style.borderRadius = '0.5rem';
+        alertDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        
+        // Create message content
+        const content = document.createElement('div');
+        content.className = 'd-flex align-items-center';
+        
+        // Add icon based on type
+        const icon = document.createElement('i');
+        icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2`;
+        
+        content.appendChild(icon);
+        content.appendChild(document.createTextNode(message));
+        alertDiv.appendChild(content);
+        
+        // Add close button
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'btn-close btn-close-white position-absolute top-0 end-0 me-2 mt-2';
+        closeButton.setAttribute('aria-label', 'Close');
+        closeButton.onclick = function() {
+            alertDiv.remove();
+        };
+        alertDiv.appendChild(closeButton);
+        
+        // Add to container
+        alertContainer.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+    </script>
 </body>
 
 </html>
