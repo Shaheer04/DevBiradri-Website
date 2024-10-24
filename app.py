@@ -276,6 +276,13 @@ def publish_event():
 
     db.events.insert_one(event_data)
     flash('Event published successfully!', 'success')
+
+    try:
+        send_email(event_data['name','date','registration_link','description','poster_image','location'], "Sucessfully Registered!", 'email_templates/event_registered.html', name=form_data['fullname'])
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+    # Continue with registration even if email fails
+
     return redirect(url_for('events_page'))
 
 @app.route('/events')
